@@ -1,5 +1,6 @@
 import 'package:englishapp/utils/colors.dart';
 import 'package:englishapp/utils/hive_method.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -18,6 +19,17 @@ class _MyPageScreenState extends State<MyPageScreen> {
   initState() {
     super.initState();
     getNum();
+    sendPageView();
+  }
+
+  void sendPageView() {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'firebase_screen': 'mypage',
+        'firebase_screen_class': "MyPageScreen",
+      },
+    );
   }
 
   getNum() async {
@@ -40,28 +52,31 @@ class _MyPageScreenState extends State<MyPageScreen> {
     final _urlLaunchWithStringButton = UrlLaunchWithStringButton();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Page"),
-        foregroundColor: Colors.black,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      // appBar: AppBar(
+      //   title: const Text("My Page"),
+      //   foregroundColor: Colors.black,
+      //   elevation: 0,
+      //   backgroundColor: Colors.white,
+      //   iconTheme: const IconThemeData(color: Colors.black),
+      // ),
       body: isLoading
           ? Container()
           : SingleChildScrollView(
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 28,
+                    height: 120,
                   ),
-                  const Text("You have learned",
-                      style: TextStyle(fontSize: 22, color: Colors.black)),
+                  const Text("You have learned : ",
+                      style: TextStyle(fontSize: 18, color: Colors.black)),
                   Text("$learned words",
                       style:
-                          const TextStyle(fontSize: 40, color: Colors.black)),
+                          const TextStyle(fontSize: 28, color: Colors.black)),
+                  const SizedBox(
+                    height: 12,
+                  ),
                   const Text("Great!!!",
-                      style: TextStyle(fontSize: 48, color: primaryColor)),
+                      style: TextStyle(fontSize: 32, color: primaryColor)),
                   // const SizedBox(
                   //   height: 40,
                   // ),
@@ -138,18 +153,18 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   //     )
                   //   ],
                   // ),
-
+                  const SizedBox(
+                    height: 60,
+                  ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
                       "No TV show or movie that you want to learn? Feel free to request! We will prepare it soon!",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                     ),
                   ),
-                  const SizedBox(
-                    height: 12,
-                  ),
+
                   // const Padding(
                   //   padding: EdgeInsets.symmetric(horizontal: 24),
                   //   child: Text(
@@ -162,10 +177,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   //   height: 20,
                   // ),
                   Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 12),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 46,
                       child: TextButton(
                           onPressed: () {
                             _urlLaunchWithStringButton.launchUriWithString(
@@ -175,7 +191,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           },
                           child: const Text(
                             'Request Form',
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 18),
                           ),
                           style: TextButton.styleFrom(
                               foregroundColor: Colors.white,
@@ -183,7 +199,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -201,7 +217,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           ),
                           Text(
                             'Inquiry',
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 16),
                           ),
                         ],
                       ),

@@ -1,4 +1,5 @@
 import 'package:englishapp/screens/learning_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:englishapp/utils/colors.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -43,6 +44,16 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
     calAnswerState();
   }
 
+  void sendPageView() {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'firebase_screen': widget.snap['title'],
+        'firebase_screen_class': "MemorizeScreen",
+      },
+    );
+  }
+
   Future<void> calAnswerState() async {
     List liAns = [];
     List liLea = [];
@@ -73,10 +84,12 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
   void initState() {
     super.initState();
     calAnswerState();
+    sendPageView();
   }
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAnalytics analytics = FirebaseAnalytics.instance;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -89,7 +102,7 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
             children: [
               Text(
                 widget.snap['video_title'],
-                style: const TextStyle(color: Colors.black, fontSize: 24),
+                style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
               Text('${widget.snap['index']}. ${widget.snap['title']}',
                   style: const TextStyle(color: Colors.black))
@@ -103,6 +116,9 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 60,
+            ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
               child: Column(
@@ -114,24 +130,30 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                   // ),
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     width: double.infinity,
                     child: Text(
                       'total : ${titleWordList.length} words',
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 18),
                       textAlign: TextAlign.right,
                     ),
                   ),
                   const SizedBox(
                     height: 24,
                   ),
-                  const Text(
-                    'Set question from :',
-                    style: TextStyle(fontSize: 20),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 18.0),
+                    child: Text(
+                      'Set question from :',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
                   ),
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                     child: Column(
                       children: [
                         Row(
@@ -147,12 +169,12 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                                 }),
                             const Text(
                               'unanswered',
-                              style: TextStyle(fontSize: 24),
+                              style: TextStyle(fontSize: 20),
                             ),
                             const Spacer(),
                             Text(
                               '${listUnans.length} words',
-                              style: const TextStyle(fontSize: 24),
+                              style: const TextStyle(fontSize: 20),
                             ),
                             const SizedBox(
                               width: 24,
@@ -172,12 +194,12 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                                 }),
                             const Text(
                               "learning",
-                              style: TextStyle(fontSize: 24),
+                              style: TextStyle(fontSize: 20),
                             ),
                             const Spacer(),
                             Text(
                               '${listLearn.length} words',
-                              style: const TextStyle(fontSize: 24),
+                              style: const TextStyle(fontSize: 20),
                             ),
                             const SizedBox(
                               width: 24,
@@ -197,12 +219,12 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                                 }),
                             const Text(
                               "memorized",
-                              style: TextStyle(fontSize: 24),
+                              style: TextStyle(fontSize: 20),
                             ),
                             const Spacer(),
                             Text(
                               '${listMemed.length} words',
-                              style: const TextStyle(fontSize: 24),
+                              style: const TextStyle(fontSize: 20),
                             ),
                             const SizedBox(
                               width: 24,
@@ -217,21 +239,25 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                           height: 50,
                           child: TextButton(
                               onPressed: () async {
+                                analytics.logEvent(
+                                    name: "tap_start",
+                                    parameters: <String, Object>{
+                                      "title": widget.snap['video_title'],
+                                      "index": widget.snap['index'],
+                                      "episode": widget.snap['title']
+                                    });
                                 List snapwordlist = List.from(titleWordList);
                                 if (!unAnsweredChecked) {
-                                  // snapwordlist.addAll(listUnans);
                                   for (var i in listUnans) {
                                     snapwordlist.remove(i);
                                   }
                                 }
                                 if (!learningChecked) {
-                                  // snapwordlist.addAll(listLearn);
                                   for (var i in listLearn) {
                                     snapwordlist.remove(i);
                                   }
                                 }
                                 if (!memorizedChecked) {
-                                  // snapwordlist.addAll(listMemed);
                                   for (var i in listMemed) {
                                     snapwordlist.remove(i);
                                   }

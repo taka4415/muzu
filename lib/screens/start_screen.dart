@@ -93,7 +93,7 @@ class _StartScreenState extends State<StartScreen> with RouteAware {
             children: [
               Text(
                 widget.snap['video_title'],
-                style: const TextStyle(color: Colors.black, fontSize: 24),
+                style: const TextStyle(color: Colors.black, fontSize: 18),
               ),
               Text('${widget.snap['index']}. ${widget.snap['title']}',
                   style: const TextStyle(color: Colors.black))

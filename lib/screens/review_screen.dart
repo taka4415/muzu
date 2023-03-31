@@ -1,5 +1,6 @@
 import 'package:englishapp/screens/learning_screen.dart';
 import 'package:englishapp/utils/hive_method.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:englishapp/utils/colors.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -38,6 +39,7 @@ class _ReviewScreenState extends State<ReviewScreen> with RouteAware {
   void initState() {
     super.initState();
     getMyReview();
+    sendPageView();
   }
 
   Future getMyReview() async {
@@ -47,35 +49,55 @@ class _ReviewScreenState extends State<ReviewScreen> with RouteAware {
     });
   }
 
+  void sendPageView() {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'firebase_screen': 'review',
+        'firebase_screen_class': "ReviewScreen",
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Review"),
-        foregroundColor: Colors.black,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Review"),
+      //   foregroundColor: Colors.black,
+      //   elevation: 0,
+      //   backgroundColor: Colors.white,
+      //   iconTheme: const IconThemeData(color: Colors.black),
+      // ),
       body: Container(
+        color: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text('You can review words at an appropriate time',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500)),
+          const Text("Review",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500)),
           const SizedBox(
-            height: 60,
+            height: 4,
+          ),
+          const Text(
+              'You can review words that you learned at an appropriate time',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+          const SizedBox(
+            height: 120,
           ),
           Text("${reviewList.length} words ",
               style:
-                  const TextStyle(fontSize: 36, fontWeight: FontWeight.w500)),
-          const Text("is waiting for your review",
-              style: TextStyle(fontSize: 20)),
+                  const TextStyle(fontSize: 28, fontWeight: FontWeight.w500)),
           const SizedBox(
-            height: 60,
+            height: 8,
+          ),
+          const Text("is waiting for your review",
+              style: TextStyle(fontSize: 16)),
+          const SizedBox(
+            height: 32,
           ),
           SizedBox(
             width: double.infinity,
-            height: 50,
+            height: 48,
             child: TextButton(
                 onPressed: () {
                   // var word = "apple";

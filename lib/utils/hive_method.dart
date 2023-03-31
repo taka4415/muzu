@@ -21,15 +21,18 @@ class HiveMethods {
     DateTime next = now.add(const Duration(hours: 8));
     DateFormat outputFormat = DateFormat('yyyy-MM-dd');
     String first = outputFormat.format(now);
-    await boxReview.put('review', {
+    Map review = {
       "test": {
         "date": now.add(const Duration(days: 360)),
         "time": 8,
         "first": first,
         "ans": 1
       }
-    });
-    Map review = await boxReview.get('review');
+    };
+    var reviewGet = await boxReview.get('review');
+    if (reviewGet != null) {
+      review = reviewGet;
+    }
     if (!review.containsKey(word)) {
       if (ans == 2) {
         next = now.add(const Duration(days: 60));

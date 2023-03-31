@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:englishapp/routes/ItemScreenArg.dart';
 import 'package:englishapp/utils/firestore_method.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 class VideoItemScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
   void initState() {
     sortEpisode();
     super.initState();
+    sendPageView();
   }
 
   sortEpisode() {
@@ -34,6 +36,16 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
     });
   }
 
+  void sendPageView() {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'firebase_screen': widget.snap['title'],
+        'firebase_screen_class': "VideoItemScreen",
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var imageUrl = 'assets/images/sample.jpg';
@@ -41,7 +53,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
 
     Locale locale = Localizations.localeOf(context);
     String languageCode = locale.languageCode;
-
+    FirebaseAnalytics analytics = FirebaseAnalytics.instance;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -71,7 +83,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                                 // color: Color.fromARGB(255, 200, 200, 200),
                                 color: Colors.amber[200],
                                 child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -149,36 +161,36 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  widget.snap['type'] == "movie"
-                      ? Container()
-                      : DropdownButton(
-                          value: 1,
-                          items: const [
-                            DropdownMenuItem(
-                              child: Text('season 1'),
-                              value: 1,
-                            ),
-                            DropdownMenuItem(
-                              child: Text('season 2'),
-                              value: 2,
-                            ),
-                            DropdownMenuItem(
-                              child: Text('season 3'),
-                              value: 3,
-                            )
-                          ],
-                          onChanged: (int? value) {}),
-                  widget.snap['type'] == "movie"
-                      ? Container()
-                      : Text('${widget.snap['seasons'].length} seasons')
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 24),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       widget.snap['type'] == "movie"
+            //           ? Container()
+            //           : DropdownButton(
+            //               value: 1,
+            //               items: const [
+            //                 DropdownMenuItem(
+            //                   child: Text('season 1'),
+            //                   value: 1,
+            //                 ),
+            //                 DropdownMenuItem(
+            //                   child: Text('season 2'),
+            //                   value: 2,
+            //                 ),
+            //                 DropdownMenuItem(
+            //                   child: Text('season 3'),
+            //                   value: 3,
+            //                 )
+            //               ],
+            //               onChanged: (int? value) {}),
+            //       widget.snap['type'] == "movie"
+            //           ? Container()
+            //           : Text('${widget.snap['seasons'].length} seasons')
+            //     ],
+            //   ),
+            // ),
             const SizedBox(
               height: 12,
             ),
@@ -189,7 +201,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                 itemCount: widget.snap['seasons'][seasons.toString()].length,
                 itemBuilder: (context, index) {
                   return _listTile(episodes.values.elementAt(index), index,
-                      _screenSize, widget.snap['title']);
+                      _screenSize, widget.snap['title'], analytics);
                 },
               ),
             ),
@@ -199,7 +211,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
     );
   }
 
-  Widget _listTile(item, index, size, title) {
+  Widget _listTile(item, index, size, title, analytics) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Container(
@@ -209,6 +221,13 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                   Border(bottom: BorderSide(width: 0.6, color: Colors.grey))),
           child: ListTile(
               onTap: () async {
+                analytics.logEvent(
+                    name: "tap_episode",
+                    parameters: <String, Object>{
+                      "title": title,
+                      "index": index,
+                      "episode": item["title"]
+                    });
                 await FirestoreMethods()
                     .getWords(id: item['id'], version: item['version']);
                 // await HiveMethods().setAnswers(words: item["words"]);

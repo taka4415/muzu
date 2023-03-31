@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishapp/routes/ItemScreenArg.dart';
 import 'package:englishapp/utils/colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 class VideoListScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
   var videoKind = "all";
   var searchText = "";
   final TextEditingController _searchController = TextEditingController();
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   @override
   void initState() {
     _searchController.clear();
@@ -25,6 +27,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
     _searchController.addListener(() {
       _controllerText();
     });
+    sendPageView();
   }
 
   @override
@@ -47,6 +50,16 @@ class _VideoListScreenState extends State<VideoListScreen> {
       videoList = li.docs;
       isLoading = false;
     });
+  }
+
+  void sendPageView() {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'firebase_screen': "top",
+        'firebase_screen_class': "VideoListScreen",
+      },
+    );
   }
 
   void selectVideoKind() {
@@ -111,30 +124,55 @@ class _VideoListScreenState extends State<VideoListScreen> {
     var _screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      // appBar: AppBar(
+      //     // toolbarHeight: 120,
+      //     elevation: 1,
+      //     backgroundColor: Colors.white,
+      //     title: Row(
+      //       children: const [
+      //         Text(
+      //           "Muzu",
+      //           style: TextStyle(color: Colors.black),
+      //         ),
+      //         Spacer(),
+      //         // GestureDetector(
+      //         //   onTap: () => Navigator.of(context).push(
+      //         //     MaterialPageRoute(
+      //         //       builder: (context) => const MyPageScreen(),
+      //         //     ),
+      //         //   ),
+      //         //   child: const Icon(
+      //         //     Icons.person,
+      //         //     color: secondaryColor,
+      //         //   ),
+      //         // ),
+      //       ],
+      //     )),
       appBar: AppBar(
-          // toolbarHeight: 120,
-          elevation: 1,
-          backgroundColor: Colors.white,
-          title: Row(
-            children: const [
-              Text(
-                "Muzu",
-                style: TextStyle(color: Colors.black),
-              ),
-              Spacer(),
-              // GestureDetector(
-              //   onTap: () => Navigator.of(context).push(
-              //     MaterialPageRoute(
-              //       builder: (context) => const MyPageScreen(),
-              //     ),
-              //   ),
-              //   child: const Icon(
-              //     Icons.person,
-              //     color: secondaryColor,
-              //   ),
-              // ),
-            ],
-          )),
+        //     // toolbarHeight: 120,
+        elevation: 1,
+        backgroundColor: Colors.white,
+        title: TextFormField(
+          controller: _searchController,
+          // onChanged: _controllerText,
+          decoration: InputDecoration(
+            // contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+            hintText: 'search movies & tv shows',
+            contentPadding: const EdgeInsets.symmetric(vertical: 0.0),
+            fillColor: Colors.grey[100],
+            filled: true,
+            isDense: true,
+            prefixIcon: const Icon(
+              Icons.search,
+              color: Colors.grey,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ),
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
@@ -147,29 +185,29 @@ class _VideoListScreenState extends State<VideoListScreen> {
                   Form(
                     child: Column(
                       children: [
-                        TextFormField(
-                          controller: _searchController,
-                          // onChanged: _controllerText,
-                          decoration: InputDecoration(
-                            // contentPadding: EdgeInsets.symmetric(vertical: 8.0),
-                            hintText: 'search',
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 0.0),
-                            fillColor: Colors.grey[200],
-                            filled: true,
-                            isDense: true,
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: Colors.grey,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
+                        // TextFormField(
+                        //   controller: _searchController,
+                        //   // onChanged: _controllerText,
+                        //   decoration: InputDecoration(
+                        //     // contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        //     hintText: 'search',
+                        //     contentPadding:
+                        //         const EdgeInsets.symmetric(vertical: 0.0),
+                        //     fillColor: Colors.grey[100],
+                        //     filled: true,
+                        //     isDense: true,
+                        //     prefixIcon: const Icon(
+                        //       Icons.search,
+                        //       color: Colors.grey,
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //       borderSide: BorderSide.none,
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(
-                          height: 8,
+                          height: 12,
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -177,7 +215,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               SizedBox(
-                                width: _screenSize.width * 0.40,
+                                width: _screenSize.width * 0.50,
                                 child: DropdownButton(
                                   isExpanded: true,
                                   value: videoKind,
@@ -230,6 +268,9 @@ class _VideoListScreenState extends State<VideoListScreen> {
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(
+                    height: 12,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(6.0),
@@ -291,17 +332,21 @@ class _VideoListScreenState extends State<VideoListScreen> {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: GestureDetector(
-        onTap: () =>
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => VideoItemScreen(),
-            //   ),
-            // ),
-            Navigator.pushNamed(
-          context,
-          '/item',
-          arguments: ItemScreenArguments(snap: snapshot),
-        ),
+        onTap: () {
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) => VideoItemScreen(),
+          //   ),
+          // ),
+          analytics.logEvent(
+              name: "tap_video_item",
+              parameters: <String, Object>{"title": snapshot['title']});
+          Navigator.pushNamed(
+            context,
+            '/item',
+            arguments: ItemScreenArguments(snap: snapshot),
+          );
+        },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,7 +360,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                           // color: Color.fromARGB(255, 200, 200, 200),
                           color: Colors.amber[200],
                           child: Padding(
-                            padding: const EdgeInsets.all(2.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

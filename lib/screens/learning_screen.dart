@@ -1,5 +1,6 @@
 import 'package:englishapp/screens/result_screen.dart';
 import 'package:englishapp/utils/hive_method.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:englishapp/utils/colors.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -38,12 +39,22 @@ class _LearningScreenState extends State<LearningScreen> {
   Box boxMyanswer = Hive.box('myanswer');
   Box boxWords = Hive.box('words');
   List meanings = [];
+  void sendPageView() {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'firebase_screen': widget.snap['title'],
+        'firebase_screen_class': "LearningScreen",
+      },
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     changeVoice();
     getMyAnswer();
+    sendPageView();
   }
 
   changeVoice() async {
@@ -97,7 +108,7 @@ class _LearningScreenState extends State<LearningScreen> {
             children: [
               Text(
                 widget.snap['video_title'],
-                style: const TextStyle(color: Colors.black, fontSize: 24),
+                style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
               Text('${widget.snap['index']}. ${widget.snap['title']}',
                   style: const TextStyle(color: Colors.black))

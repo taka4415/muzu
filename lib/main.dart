@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorObservers: <NavigatorObserver>[routeObserver],
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Muzu',
       theme: ThemeData.light().copyWith(),
       // home: const ResponsiveLayout(
       //   webSreenLayout: WebScreenLayout(),
