@@ -1,6 +1,8 @@
 import 'dart:collection';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:englishapp/routes/ItemScreenArg.dart';
+import 'package:englishapp/utils/api_method.dart';
 import 'package:englishapp/utils/firestore_method.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ class VideoItemScreen extends StatefulWidget {
 
 class _VideoItemScreenState extends State<VideoItemScreen> {
   var seasons = 1;
+  Map videoInfo = {"overview": "", "release_date": "", "first_air_date": ""};
   Map<Object?, dynamic> episodes = {
     1: {"title": "part 1"}
   };
@@ -25,6 +28,9 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
     sortEpisode();
     super.initState();
     sendPageView();
+    if (widget.snap['tmdb'].length > 0) {
+      getMovieInfo();
+    }
   }
 
   sortEpisode() {
@@ -44,6 +50,15 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
         'firebase_screen_class': "VideoItemScreen",
       },
     );
+  }
+
+  void getMovieInfo() async {
+    var res = await ApiMethod()
+        .getVideoInfo(widget.snap['tmdb'], widget.snap['type']);
+    setState(() {
+      videoInfo = res;
+    });
+    ;
   }
 
   @override
@@ -105,10 +120,10 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                                   ),
                                 ),
                               )
-                            : Image.asset(
-                                imageUrl,
-                                width: _screenSize.width * 0.32,
-                              ),
+                            : CachedNetworkImage(
+                                imageUrl: "https://image.tmdb.org/t/p/w300/" +
+                                    widget.snap['img'] +
+                                    ".jpg"),
                       ),
                     ),
                   ),
@@ -119,14 +134,18 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.snap['type'],
-                          style: const TextStyle(fontSize: 20),
-                        ),
+                        // Text(
+                        //   widget.snap['type'],
+                        //   style: const TextStyle(fontSize: 20),
+                        // ),
                         const SizedBox(
                           height: 8,
                         ),
-                        Text(widget.snap['year']),
+                        videoInfo != null
+                            ? widget.snap['type'] == "movie"
+                                ? Text(videoInfo['release_date'])
+                                : Text(videoInfo['first_air_date'])
+                            : Container(),
                         Text(
                           widget.snap['title'],
                           overflow: TextOverflow.ellipsis,
@@ -145,16 +164,16 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                           height: 8,
                         ),
                         // Spacer(),
-                        widget.snap['description'].isEmpty
-                            ? Container()
-                            : Text(
-                                widget.snap['description'],
+                        videoInfo != null
+                            ? Text(
+                                videoInfo['overview'],
                                 style: const TextStyle(fontSize: 16),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines:
                                     (_screenSize.width * 0.40 * 1000 / 680 / 30)
                                         .floor(),
                               )
+                            : Container()
                       ],
                     ),
                   )

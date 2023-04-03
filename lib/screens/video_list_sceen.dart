@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishapp/routes/ItemScreenArg.dart';
 import 'package:englishapp/utils/colors.dart';
@@ -352,60 +353,68 @@ class _VideoListScreenState extends State<VideoListScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(6.0),
               child: AspectRatio(
-                  aspectRatio: 0.68,
-                  child: snapshot['img'].isEmpty
-                      ? Container(
-                          // color: Color.fromARGB(255, 200, 200, 200),
-                          color: Colors.amber[200],
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  snapshot['title'],
-                                  overflow: TextOverflow.clip,
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                languageCode == "ja"
-                                    ? Text(
-                                        snapshot['jpn'],
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    : Container(),
-                              ],
-                            ),
+                aspectRatio: 0.68,
+                child: snapshot['img'].isEmpty
+                    ? Container(
+                        // color: Color.fromARGB(255, 200, 200, 200),
+                        color: Colors.amber[200],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                snapshot['title'],
+                                overflow: TextOverflow.clip,
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              languageCode == "ja"
+                                  ? Text(
+                                      snapshot['jpn'],
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : Container(),
+                            ],
                           ),
-                        )
-                      : Image.asset(
-                          snapshot['img'],
-                        )),
+                        ),
+                      )
+                    // : Image.network("https://image.tmdb.org/t/p/w300/" +
+                    //     snapshot['img'] +
+                    //     ".jpg"),
+                    : CachedNetworkImage(
+                        imageUrl: "https://image.tmdb.org/t/p/w300/" +
+                            snapshot['img'] +
+                            ".jpg"),
+              ),
             ),
-            Row(
-              children: [
-                Text(
-                  snapshot['year'],
-                  style: const TextStyle(fontSize: 12),
-                ),
-                const Spacer(),
-                Text(
-                  snapshot['type'] == "movie" ? "" : "",
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     Text(
+            //       snapshot['year'],
+            //       style: const TextStyle(fontSize: 12),
+            //     ),
+            //     const Spacer(),
+            //     Text(
+            //       snapshot['type'] == "movie" ? "" : "",
+            //       style: const TextStyle(fontSize: 12),
+            //     ),
+            //   ],
+            // ),
             Flexible(
-              child: Text(
-                snapshot['title'],
-                overflow: TextOverflow.fade,
-                textAlign: TextAlign.start,
-                style: const TextStyle(fontSize: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                  snapshot['title'],
+                  overflow: TextOverflow.fade,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w500),
+                ),
               ),
             )
           ],

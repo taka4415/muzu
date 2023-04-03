@@ -270,7 +270,16 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   // ),
                   const SizedBox(
                     height: 24,
-                  )
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(24.0),
+                    child: Text(
+                        "This product uses the TMDB API but is not endorsed or certified by TMDB."),
+                  ),
+                  Image.asset(
+                    'assets/images/tmdb.png',
+                    height: 32,
+                  ),
                 ],
               ),
             ),
