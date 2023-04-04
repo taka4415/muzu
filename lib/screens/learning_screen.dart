@@ -6,11 +6,17 @@ import 'package:englishapp/utils/colors.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class LearningScreen extends StatefulWidget {
   final snap;
   final wordlist;
-  const LearningScreen({Key? key, required this.snap, required this.wordlist})
+  final bool isQuizMode;
+  const LearningScreen(
+      {Key? key,
+      required this.snap,
+      required this.wordlist,
+      required this.isQuizMode})
       : super(key: key);
 
   @override
@@ -18,6 +24,7 @@ class LearningScreen extends StatefulWidget {
 }
 
 class _LearningScreenState extends State<LearningScreen> {
+  final _player = AudioPlayer();
   static const iosChannel = MethodChannel('ios');
   List voiceNames = [
     "Samantha",
@@ -32,13 +39,20 @@ class _LearningScreenState extends State<LearningScreen> {
   String language = "en-US";
   bool firstBuild = true;
   FlutterTts tts = FlutterTts();
-
   int myAnswer = 0;
   String a = "";
   bool isLoading = true;
   Box boxMyanswer = Hive.box('myanswer');
   Box boxWords = Hive.box('words');
-  List meanings = [];
+  List meanings = [
+    {"meaning": ""},
+    {"meaning": ""},
+    {"meaning": ""},
+    {"meaning": ""},
+    {"meaning": ""},
+  ];
+  String answer_meaning = "";
+
   void sendPageView() {
     FirebaseAnalytics.instance.logEvent(
       name: 'screen_view',
@@ -79,20 +93,40 @@ class _LearningScreenState extends State<LearningScreen> {
     });
   }
 
+  getQuiz(word) async {
+    var _tmp = await HiveMethods().getQuiz(widget.snap['id'], word);
+
+    setState(() {
+      for (var i in _tmp) {
+        if (i['word'] == word) {
+          setState(() {
+            answer_meaning = i['meaning'];
+          });
+        }
+      }
+      meanings = _tmp;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     tts.setLanguage(language);
 
     String word = widget.wordlist[page]!;
+
     if (firstBuild) {
       final arguments = {'name': word};
       iosChannel.invokeMethod('getDictionary', arguments);
       Future.delayed(const Duration(milliseconds: 450))
           .then((_) => _speak(word));
+      setState(() {
+        firstBuild = false;
+      });
+      if (widget.isQuizMode) {
+        getQuiz(word);
+      }
     }
-    setState(() {
-      firstBuild = false;
-    });
+
     // tts.setPitch(1.0);
     // tts.setSpeechRate(0.5);
 
@@ -103,15 +137,25 @@ class _LearningScreenState extends State<LearningScreen> {
         automaticallyImplyLeading: false,
         title: SizedBox(
           width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Text(
-                widget.snap['video_title'],
-                style: const TextStyle(color: Colors.black, fontSize: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.snap['video_title'],
+                    style: const TextStyle(color: Colors.black, fontSize: 16),
+                  ),
+                  Text('${widget.snap['index']}. ${widget.snap['title']}',
+                      style: const TextStyle(color: Colors.black))
+                ],
               ),
-              Text('${widget.snap['index']}. ${widget.snap['title']}',
-                  style: const TextStyle(color: Colors.black))
+              const Spacer(),
+              GestureDetector(
+                  onTap: () {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  },
+                  child: const Icon(Icons.close))
             ],
           ),
         ),
@@ -137,62 +181,330 @@ class _LearningScreenState extends State<LearningScreen> {
                             _speak(word);
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 60),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             width: double.infinity,
                             child: const Icon(
                               Icons.volume_up,
-                              size: 80,
+                              size: 60,
                               color: Colors.grey,
                             ),
                           ),
                         ),
                         const SizedBox(
-                          height: 40,
+                          height: 10,
                         ),
                         Text(
                           '${page + 1} / ${widget.wordlist.length}',
-                          style: const TextStyle(fontSize: 24),
+                          style: const TextStyle(fontSize: 22),
                         ),
                         const SizedBox(
-                          height: 80,
+                          height: 40,
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: TextButton(
-                              onPressed: () async {
-                                // boxMyanswer.put(word, 2);
-                                // if (page + 1 == widget.wordlist.length) {
-                                //   await Navigator.of(context)
-                                //       .push(MaterialPageRoute(
-                                //     builder: (context) => ResultScreen(
-                                //         snap: widget.snap,
-                                //         wordlist: widget.wordlist),
-                                //   ));
-                                // } else {
-                                //   setState(() {
-                                //     firstBuild = true;
-                                //     page = page + 1;
-                                //   });
-                                // }
-                                iosChannel.invokeMethod('showDictionary');
-                                setState(() {
-                                  boxMyanswer.put(word, 2);
-                                  // print(boxWords.get(word));
-                                  // meanings = boxWords.get(word)["meaning"];
-                                  showAnswer = true;
-                                });
-                              },
-                              child: const Text(
-                                'I know !',
-                                style: TextStyle(fontSize: 20),
+                        widget.isQuizMode
+                            ? Column(
+                                children: [
+                                  SizedBox(
+                                    width: double.infinity,
+                                    // height: 70,
+                                    child: TextButton(
+                                        onPressed: () async {
+                                          if (meanings[0]['word'] == word) {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/right_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 2);
+                                                      showAnswer = true;
+                                                    }));
+                                          } else {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/wrong_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 1);
+                                                      showAnswer = true;
+                                                    }));
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(meanings[0]['meaning'],
+                                                style: const TextStyle(
+                                                    fontSize: 16),
+                                                textAlign: TextAlign.left),
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          side: const BorderSide(
+                                            color: Colors.orange, //色
+                                            width: 1, //太さ
+                                          ),
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    // height: 70,
+                                    child: TextButton(
+                                        onPressed: () async {
+                                          if (meanings[1]['word'] == word) {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/right_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 2);
+                                                      showAnswer = true;
+                                                    }));
+                                          } else {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/wrong_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 1);
+                                                      showAnswer = true;
+                                                    }));
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(meanings[1]['meaning'],
+                                                style: const TextStyle(
+                                                    fontSize: 16),
+                                                textAlign: TextAlign.left),
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          side: const BorderSide(
+                                            color: Colors.orange, //色
+                                            width: 1, //太さ
+                                          ),
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    // height: 70,
+                                    child: TextButton(
+                                        onPressed: () async {
+                                          if (meanings[2]['word'] == word) {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/right_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 2);
+                                                      showAnswer = true;
+                                                    }));
+                                          } else {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/wrong_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 1);
+                                                      showAnswer = true;
+                                                    }));
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(meanings[2]['meaning'],
+                                                style: const TextStyle(
+                                                    fontSize: 16),
+                                                textAlign: TextAlign.left),
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          side: const BorderSide(
+                                            color: Colors.orange, //色
+                                            width: 1, //太さ
+                                          ),
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    // height: 70,
+                                    child: TextButton(
+                                        onPressed: () async {
+                                          if (meanings[3]['word'] == word) {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/right_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 2);
+                                                      showAnswer = true;
+                                                    }));
+                                          } else {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/wrong_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 1);
+                                                      showAnswer = true;
+                                                    }));
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(meanings[3]['meaning'],
+                                                style: const TextStyle(
+                                                    fontSize: 16),
+                                                textAlign: TextAlign.left),
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          side: const BorderSide(
+                                            color: Colors.orange, //色
+                                            width: 1, //太さ
+                                          ),
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    // height: 70,
+                                    child: TextButton(
+                                        onPressed: () async {
+                                          if (meanings[4]['word'] == word) {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/right_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 2);
+                                                      showAnswer = true;
+                                                    }));
+                                          } else {
+                                            await _player
+                                                .play(AssetSource(
+                                                    'sounds/wrong_answer.mp3'))
+                                                .then((value) => null);
+                                            Future.delayed(const Duration(
+                                                    milliseconds: 1000))
+                                                .then((_) => setState(() {
+                                                      iosChannel.invokeMethod(
+                                                          'showDictionary');
+                                                      boxMyanswer.put(word, 1);
+                                                      showAnswer = true;
+                                                    }));
+                                          }
+                                        },
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text("None of the above",
+                                                style: TextStyle(fontSize: 16),
+                                                textAlign: TextAlign.left),
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          side: const BorderSide(
+                                            color: Colors.orange, //色
+                                            width: 1, //太さ
+                                          ),
+                                        )),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  SizedBox(
+                                    height: 80,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: TextButton(
+                                        onPressed: () async {
+                                          iosChannel
+                                              .invokeMethod('showDictionary');
+                                          setState(() {
+                                            boxMyanswer.put(word, 2);
+                                            showAnswer = true;
+                                          });
+                                        },
+                                        child: const Text(
+                                          'I know !',
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            backgroundColor: primaryColor)),
+                                  ),
+                                ],
                               ),
-                              style: TextButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: primaryColor)),
-                        ),
                         const SizedBox(
-                          height: 24,
+                          height: 40,
                         ),
                         SizedBox(
                           width: double.infinity,
@@ -202,21 +514,24 @@ class _LearningScreenState extends State<LearningScreen> {
                                 iosChannel.invokeMethod('showDictionary');
                                 setState(() {
                                   boxMyanswer.put(word, 1);
-                                  // print(boxWords.get(word));
-                                  // meanings = boxWords.get(word)["meaning"];
                                   showAnswer = true;
                                 });
                               },
-                              child: const Text(
-                                "not sure...",
-                                style: TextStyle(fontSize: 20),
-                              ),
+                              child: widget.isQuizMode
+                                  ? const Text(
+                                      "not sure... skip",
+                                      style: TextStyle(fontSize: 20),
+                                    )
+                                  : const Text(
+                                      "not sure",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
                               style: TextButton.styleFrom(
                                 foregroundColor: Colors.black,
                                 backgroundColor: Colors.white,
                                 side: const BorderSide(
                                   color: Colors.grey, //色
-                                  width: 2, //太さ
+                                  width: 1, //太さ
                                 ),
                               )),
                         ),
@@ -229,27 +544,18 @@ class _LearningScreenState extends State<LearningScreen> {
                 : Container(
                     width: double.infinity,
                     color: Colors.white,
-                    padding: const EdgeInsets.all(24),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                     child: SizedBox(
-                      height: 180,
+                      // height: 180,
                       child: Column(children: [
-                        // const SizedBox(
-                        //   height: 12,
-                        // ),
-                        // Text(
-                        //   '${page + 1} / ${widget.wordlist.length}',
-                        //   style: const TextStyle(fontSize: 24),
-                        // ),
-                        // const SizedBox(
-                        //   height: 24,
-                        // ),
                         Container(
                           width: double.infinity,
                           alignment: Alignment.centerRight,
                           child: const Text(
                             "memorized",
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                         ),
                         SizedBox(
@@ -300,14 +606,14 @@ class _LearningScreenState extends State<LearningScreen> {
                                     Text(
                                       word,
                                       style: const TextStyle(
-                                          color: Colors.black, fontSize: 32),
+                                          color: Colors.black, fontSize: 28),
                                     ),
                                     const SizedBox(
                                       width: 4,
                                     ),
                                     const Icon(
                                       Icons.volume_up,
-                                      size: 36,
+                                      size: 28,
                                       color: Colors.grey,
                                     ),
                                   ],
@@ -377,7 +683,7 @@ class _LearningScreenState extends State<LearningScreen> {
                         //           primary: Colors.white)),
                         // ),
                         const SizedBox(
-                          height: 20,
+                          height: 8,
                         ),
                         // ListView.builder(
                         //     shrinkWrap: true,
@@ -395,7 +701,20 @@ class _LearningScreenState extends State<LearningScreen> {
                         // const SizedBox(
                         //   height: 40,
                         // ),
-
+                        widget.isQuizMode
+                            ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  answer_meaning,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              )
+                            : const SizedBox(
+                                height: 40,
+                              ),
+                        const SizedBox(
+                          height: 8,
+                        ),
                         SizedBox(
                           width: double.infinity,
                           height: 40,
@@ -430,9 +749,9 @@ class _LearningScreenState extends State<LearningScreen> {
                                   foregroundColor: Colors.white,
                                   backgroundColor: primaryColor)),
                         ),
-                        const SizedBox(
-                          height: 16,
-                        ),
+                        // const SizedBox(
+                        //   height: 16,
+                        // ),
                         // Container(
                         //   width: double.infinity,
                         //   height: 60,
@@ -463,9 +782,9 @@ class _LearningScreenState extends State<LearningScreen> {
                         //     ),
                         //   ),
                         // ),
-                        const SizedBox(
-                          height: 24,
-                        )
+                        // const SizedBox(
+                        //   height: 24,
+                        // )
                       ]),
                     ),
                   ),

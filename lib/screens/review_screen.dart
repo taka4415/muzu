@@ -112,8 +112,11 @@ class _ReviewScreenState extends State<ReviewScreen> with RouteAware {
                       reviewList = reviewList.take(10).toList();
                     }
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          LearningScreen(snap: item, wordlist: reviewList),
+                      builder: (context) => LearningScreen(
+                        snap: item,
+                        wordlist: reviewList,
+                        isQuizMode: false,
+                      ),
                     ));
                   }
                 },

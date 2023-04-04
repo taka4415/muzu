@@ -58,12 +58,11 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
     setState(() {
       videoInfo = res;
     });
-    ;
   }
 
   @override
   Widget build(BuildContext context) {
-    var imageUrl = 'assets/images/sample.jpg';
+    // var imageUrl = 'assets/images/sample.jpg';
     var _screenSize = MediaQuery.of(context).size;
 
     Locale locale = Localizations.localeOf(context);
@@ -141,11 +140,9 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                         const SizedBox(
                           height: 8,
                         ),
-                        videoInfo != null
-                            ? widget.snap['type'] == "movie"
-                                ? Text(videoInfo['release_date'])
-                                : Text(videoInfo['first_air_date'])
-                            : Container(),
+                        widget.snap['type'] == "movie"
+                            ? Text(videoInfo['release_date'])
+                            : Text(videoInfo['first_air_date']),
                         Text(
                           widget.snap['title'],
                           overflow: TextOverflow.ellipsis,
@@ -163,17 +160,13 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                         const SizedBox(
                           height: 8,
                         ),
-                        // Spacer(),
-                        videoInfo != null
-                            ? Text(
-                                videoInfo['overview'],
-                                style: const TextStyle(fontSize: 16),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines:
-                                    (_screenSize.width * 0.40 * 1000 / 680 / 30)
-                                        .floor(),
-                              )
-                            : Container()
+                        Text(
+                          videoInfo['overview'],
+                          style: const TextStyle(fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: (_screenSize.width * 0.40 * 1000 / 680 / 30)
+                              .floor(),
+                        )
                       ],
                     ),
                   )
@@ -212,6 +205,14 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
             // ),
             const SizedBox(
               height: 12,
+            ),
+            // ignore: prefer_const_constructors
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: const Text(
+                "Lesson",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
             ),
             Flexible(
               child: ListView.builder(
@@ -253,6 +254,10 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                 item['video_title'] = title;
                 item['index'] = index + 1;
                 item['review'] = false;
+                item['img'] = widget.snap['img'];
+                item['videoInfo'] = videoInfo;
+                item['type'] = widget.snap['type'];
+
                 Navigator.pushNamed(
                   context,
                   // '/start',

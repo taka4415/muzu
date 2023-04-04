@@ -5,6 +5,8 @@ class HiveMethods {
   Box boxMyanswer = Hive.box('myanswer');
   Box boxTitles = Hive.box('titles');
   Box boxReview = Hive.box<Map>('review');
+  Box boxTitleWords = Hive.box('title_words');
+  Box boxWords = Hive.box('words');
   // Box boxWords = Hive.box('words');
 
   Future<String> setAnswers({required words}) async {
@@ -120,5 +122,22 @@ class HiveMethods {
     // print(learningNum);
     // print(memedNum);
     return [learningNum, memedNum];
+  }
+
+  getQuiz(id, word) async {
+    List tmp = await boxTitleWords.get(id);
+    List wordlist = List.from(tmp);
+    wordlist.remove(word);
+    wordlist.shuffle();
+    List options = wordlist.take(4).toList();
+    options.add(word);
+    List answers = [];
+    for (var option in options) {
+      var meaning = boxWords.get(option);
+      answers.add(meaning);
+    }
+    answers.shuffle();
+    // print(answers);
+    return answers;
   }
 }

@@ -14,7 +14,6 @@ class ApiMethod {
       url,
     );
     Map<String, dynamic> map = jsonDecode(res.body);
-    print(map);
     return map;
   }
 }

@@ -320,6 +320,25 @@ class _VideoListScreenState extends State<VideoListScreen> {
                   //     children: list,
                   //   ),
                   // ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/tmdb.png',
+                          height: 32,
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        const Flexible(
+                          child: Text(
+                              "This product uses the TMDB API but is not endorsed or certified by TMDB."),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

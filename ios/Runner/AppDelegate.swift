@@ -37,7 +37,7 @@ import Flutter
         let toolBar = ref.view.findViews(subclassOf: UIToolbar.self).first
         // toolBar!.removeFromSuperview()
         // ref.view.layoutMargins = UIEdgeInsets.init(top:-50,left:0,bottom:0,right:0)
-        ref.view.frame = CGRect(x:12,y:300,width:(_controller.view.bounds.width-24),height:(_controller.view.bounds.height/1.5))
+        ref.view.frame = CGRect(x:12,y:(_controller.view.bounds.height*0.382),width:(_controller.view.bounds.width-24),height:(_controller.view.bounds.height*0.618))
         _controller.view.addSubview(ref.view)
         ref.view.isHidden = true;
         result("success")
