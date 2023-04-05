@@ -93,7 +93,7 @@ class HiveMethods {
   Future<List> getReview() async {
     DateTime now = DateTime.now();
     Map review = await boxReview.get('review', defaultValue: {
-      "apple": {"date": "2100-03-16 12:35:19.810280", "time": 0}
+      "apple": {"date": DateTime.parse("2100-03-16 12:35:19.810280"), "time": 0}
     });
     // print(review);
     var li = Map.from(review);
@@ -108,7 +108,9 @@ class HiveMethods {
   getLearnedNum() async {
     var learningNum = 0;
     var memedNum = 0;
-    Map review = await boxReview.get('review');
+    Map review = await boxReview.get('review', defaultValue: {
+      "test": {"ans": 0}
+    });
     review.forEach((key, value) {
       if (value.containsKey("ans")) {
         if (value['ans'].toString() == "1") {

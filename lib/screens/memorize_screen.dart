@@ -322,7 +322,7 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                             ],
                           ),
                           const SizedBox(
-                            height: 12,
+                            height: 40,
                           ),
                         ],
                       ),

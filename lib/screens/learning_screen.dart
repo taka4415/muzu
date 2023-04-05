@@ -139,6 +139,18 @@ class _LearningScreenState extends State<LearningScreen> {
           width: double.infinity,
           child: Row(
             children: [
+              GestureDetector(
+                onTap: () {
+                  if (showAnswer) {
+                    iosChannel.invokeMethod('removeDictionary');
+                  }
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+                child: const Icon(Icons.arrow_back_ios),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -150,12 +162,6 @@ class _LearningScreenState extends State<LearningScreen> {
                       style: const TextStyle(color: Colors.black))
                 ],
               ),
-              const Spacer(),
-              GestureDetector(
-                  onTap: () {
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  },
-                  child: const Icon(Icons.close))
             ],
           ),
         ),
