@@ -53,22 +53,19 @@ class _LearningScreenState extends State<LearningScreen> {
   ];
   String answer_meaning = "";
 
-  void sendPageView() {
-    FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'firebase_screen': widget.snap['title'],
-        'firebase_screen_class': "LearningScreen",
-      },
-    );
-  }
+  // void sendPageView() {
+  //   FirebaseAnalytics.instance.logScreenView(
+  //     screenName: 'learning',
+  //     screenClass: '/learning',
+  //   );
+  // }
 
   @override
   void initState() {
     super.initState();
     changeVoice();
     getMyAnswer();
-    sendPageView();
+    // sendPageView();
   }
 
   changeVoice() async {

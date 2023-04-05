@@ -19,7 +19,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
   var videoKind = "all";
   var searchText = "";
   final TextEditingController _searchController = TextEditingController();
-  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   @override
   void initState() {
     _searchController.clear();
@@ -28,7 +27,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
     _searchController.addListener(() {
       _controllerText();
     });
-    sendPageView();
   }
 
   @override
@@ -51,16 +49,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
       videoList = li.docs;
       isLoading = false;
     });
-  }
-
-  void sendPageView() {
-    FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'firebase_screen': "top",
-        'firebase_screen_class': "VideoListScreen",
-      },
-    );
   }
 
   void selectVideoKind() {
@@ -352,15 +340,18 @@ class _VideoListScreenState extends State<VideoListScreen> {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           // Navigator.of(context).push(
           //   MaterialPageRoute(
           //     builder: (context) => VideoItemScreen(),
           //   ),
           // ),
-          analytics.logEvent(
+          await FirebaseAnalytics.instance.logEvent(
               name: "tap_video_item",
-              parameters: <String, Object>{"title": snapshot['title']});
+              parameters: <String, Object>{
+                "title": snapshot['id'],
+                "content_type": snapshot['type']
+              });
           Navigator.pushNamed(
             context,
             '/item',
@@ -390,14 +381,14 @@ class _VideoListScreenState extends State<VideoListScreen> {
                                 style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
-                              languageCode == "ja"
-                                  ? Text(
-                                      snapshot['jpn'],
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  : Container(),
+                              // languageCode == "ja"
+                              //     ? Text(
+                              //         snapshot['jpn'],
+                              //         style: const TextStyle(
+                              //             fontSize: 14,
+                              //             fontWeight: FontWeight.bold),
+                              //       )
+                              //     : Container(),
                             ],
                           ),
                         ),

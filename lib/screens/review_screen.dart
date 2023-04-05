@@ -39,7 +39,6 @@ class _ReviewScreenState extends State<ReviewScreen> with RouteAware {
   void initState() {
     super.initState();
     getMyReview();
-    sendPageView();
   }
 
   Future getMyReview() async {
@@ -47,16 +46,6 @@ class _ReviewScreenState extends State<ReviewScreen> with RouteAware {
     setState(() {
       reviewList = li;
     });
-  }
-
-  void sendPageView() {
-    FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'firebase_screen': 'review',
-        'firebase_screen_class': "ReviewScreen",
-      },
-    );
   }
 
   @override

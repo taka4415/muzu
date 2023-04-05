@@ -19,17 +19,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
   initState() {
     super.initState();
     getNum();
-    sendPageView();
-  }
-
-  void sendPageView() {
-    FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'firebase_screen': 'mypage',
-        'firebase_screen_class': "MyPageScreen",
-      },
-    );
   }
 
   getNum() async {

@@ -52,16 +52,6 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
     calAnswerState();
   }
 
-  void sendPageView() {
-    FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'firebase_screen': widget.snap['title'],
-        'firebase_screen_class': "MemorizeScreen",
-      },
-    );
-  }
-
   Future<void> calAnswerState() async {
     List liAns = [];
     List liLea = [];
@@ -92,7 +82,6 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
   void initState() {
     super.initState();
     calAnswerState();
-    sendPageView();
   }
 
   @override
@@ -363,9 +352,10 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                               analytics.logEvent(
                                   name: "tap_start",
                                   parameters: <String, Object>{
-                                    "title": widget.snap['video_title'],
-                                    "index": widget.snap['index'],
-                                    "episode": widget.snap['title']
+                                    "title": widget.snap['video_id'],
+                                    "lesson_index": widget.snap['index'],
+                                    "episode": widget.snap['id'],
+                                    "content_type": widget.snap['type']
                                   });
                               List snapwordlist = List.from(titleWordList);
                               if (!unAnsweredChecked) {

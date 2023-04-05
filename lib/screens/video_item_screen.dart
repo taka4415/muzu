@@ -27,7 +27,6 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
   void initState() {
     sortEpisode();
     super.initState();
-    sendPageView();
     if (widget.snap['tmdb'].length > 0) {
       getMovieInfo();
     }
@@ -40,16 +39,6 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
     setState(() {
       episodes = eps;
     });
-  }
-
-  void sendPageView() {
-    FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'firebase_screen': widget.snap['title'],
-        'firebase_screen_class': "VideoItemScreen",
-      },
-    );
   }
 
   void getMovieInfo() async {
@@ -67,7 +56,6 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
 
     Locale locale = Localizations.localeOf(context);
     String languageCode = locale.languageCode;
-    FirebaseAnalytics analytics = FirebaseAnalytics.instance;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -221,7 +209,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                 itemCount: widget.snap['seasons'][seasons.toString()].length,
                 itemBuilder: (context, index) {
                   return _listTile(episodes.values.elementAt(index), index,
-                      _screenSize, widget.snap['title'], analytics);
+                      _screenSize, widget.snap);
                 },
               ),
             ),
@@ -231,7 +219,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
     );
   }
 
-  Widget _listTile(item, index, size, title, analytics) {
+  Widget _listTile(item, index, size, snap) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Container(
@@ -241,17 +229,18 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                   Border(bottom: BorderSide(width: 0.6, color: Colors.grey))),
           child: ListTile(
               onTap: () async {
-                analytics.logEvent(
-                    name: "tap_episode",
-                    parameters: <String, Object>{
-                      "title": title,
-                      "index": index,
-                      "episode": item["title"]
-                    });
+                FirebaseAnalytics.instance
+                    .logEvent(name: "tap_episode", parameters: <String, Object>{
+                  "title": snap['id'],
+                  "lesson_index": index,
+                  "episode": item["id"],
+                  "content_type": snap['type']
+                });
                 await FirestoreMethods()
                     .getWords(id: item['id'], version: item['version']);
                 // await HiveMethods().setAnswers(words: item["words"]);
-                item['video_title'] = title;
+                item['video_id'] = snap['id'];
+                item['video_title'] = snap['title'];
                 item['index'] = index + 1;
                 item['review'] = false;
                 item['img'] = widget.snap['img'];
