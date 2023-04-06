@@ -797,6 +797,8 @@ class _LearningScreenState extends State<LearningScreen> {
 
   _speak(String word) async {
     // await changeVoice();
+    await tts.setIosAudioCategory(IosTextToSpeechAudioCategory.playback,
+        [IosTextToSpeechAudioCategoryOptions.defaultToSpeaker]);
     tts.speak(word);
     // voiceNum = voiceNum + 1;
   }

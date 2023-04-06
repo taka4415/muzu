@@ -66,6 +66,10 @@ class _MeaningScreenState extends State<MeaningScreen> {
                   // ),
                   GestureDetector(
                     onTap: () async {
+                      await tts.setIosAudioCategory(
+                          IosTextToSpeechAudioCategory.playback, [
+                        IosTextToSpeechAudioCategoryOptions.defaultToSpeaker
+                      ]);
                       _speak(word);
                     },
                     child: Row(

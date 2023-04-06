@@ -16,6 +16,8 @@ class WordTile extends StatefulWidget {
 class _WordTileState extends State<WordTile> {
   FlutterTts tts = FlutterTts();
   _speak(String word) async {
+    await tts.setIosAudioCategory(IosTextToSpeechAudioCategory.playback,
+        [IosTextToSpeechAudioCategoryOptions.defaultToSpeaker]);
     tts.speak(word);
   }
 
