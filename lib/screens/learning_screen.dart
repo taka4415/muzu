@@ -796,20 +796,8 @@ class _LearningScreenState extends State<LearningScreen> {
   }
 
   _speak(String word) async {
-    // await changeVoice();
     await tts.setIosAudioCategory(IosTextToSpeechAudioCategory.playback,
         [IosTextToSpeechAudioCategoryOptions.defaultToSpeaker]);
     tts.speak(word);
-    // voiceNum = voiceNum + 1;
   }
-
-  // Future getBatteryLevel(word) async {
-  //   // iOSのメソッドに受けわたす引数
-  //   final arguments = {'word': word};
-  //   // バッテリーの残量を取得
-  //   final String newBateryLevel =
-  //       await iosChannel.invokeMethod('getDictionary', arguments);
-  //   // 画面を再描画する
-  //   setState(() {});
-  // }
 }
