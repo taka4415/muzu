@@ -73,7 +73,7 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
 
     List<Widget> homeScreenItems = [
       // FeedScreen(method: navigationTapped, user: user),
-      const VideoListScreen(),
+      VideoListScreen(),
       // FeedHomeScreen(method: navigationTapped, user: user),
       // SearchScreen(user: user),
       // AddPostScreen(user: user),

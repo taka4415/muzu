@@ -7,6 +7,7 @@ class HiveMethods {
   Box boxReview = Hive.box<Map>('review');
   Box boxTitleWords = Hive.box('title_words');
   Box boxWords = Hive.box('words');
+  Box boxSetting = Hive.box('settings');
   // Box boxWords = Hive.box('words');
 
   Future<String> setAnswers({required words}) async {
@@ -141,5 +142,39 @@ class HiveMethods {
     answers.shuffle();
     // print(answers);
     return answers;
+  }
+
+  getIsFirst() async {
+    bool isFirst = await boxSetting.get("isFirst", defaultValue: true);
+    return isFirst;
+  }
+
+  setIsFirst() async {
+    await boxSetting.put("isFirst", false);
+  }
+
+  setLocale(String language) async {
+    await boxSetting.put("language", language);
+  }
+
+  getLanguage() async {
+    String language = await boxSetting.get('language', defaultValue: "en");
+    if (["ja", "ar", "es", "fr", "en"].contains(language)) {
+      return language;
+    } else {
+      return "en";
+    }
+  }
+
+  getMyStudy() async {
+    Map ids = await boxSetting.get("mystudy", defaultValue: {});
+    return ids;
+  }
+
+  setMyStudy(String id) async {
+    Map ids = await boxSetting.get("mystudy", defaultValue: {});
+    DateTime now = DateTime.now();
+    ids[id] = now;
+    await boxSetting.put("mystudy", ids);
   }
 }

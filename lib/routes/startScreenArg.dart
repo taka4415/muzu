@@ -1,3 +1,4 @@
+// ignore: file_names
 class StartScreenArguments {
   final snap;
   final season;

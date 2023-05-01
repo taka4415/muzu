@@ -9,7 +9,8 @@ class FirestoreMethods {
   Box boxMyanswer = Hive.box('myanswer');
   // final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  Future<String> getWords({required String id, required int version}) async {
+  Future<String> getWords({required String id}) async {
+    var version = await getVersion();
     final v = boxTitles.get(id).toString();
     if (v != version.toString()) {
       final snap = await _firestore
@@ -37,6 +38,24 @@ class FirestoreMethods {
       // print("already downloaded");
     }
     return "success";
+  }
+
+  getVersion() async {
+    final snap = await _firestore.collection('version').doc('vocab').get();
+    var tmp = snap.data();
+    return tmp!['version'];
+  }
+
+  reportBug(
+      {required String word,
+      required String lang,
+      required int gameRule}) async {
+    await _firestore.collection("report").add({
+      "word": word,
+      "language": lang,
+      "rule": gameRule,
+      "timestamp": FieldValue.serverTimestamp()
+    });
   }
 }
 

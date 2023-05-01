@@ -1,9 +1,11 @@
 import 'dart:collection';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:englishapp/routes/ItemScreenArg.dart';
 import 'package:englishapp/utils/api_method.dart';
 import 'package:englishapp/utils/firestore_method.dart';
+import 'package:englishapp/utils/hive_method.dart';
+import 'package:englishapp/widgets/start_dialog.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
@@ -17,14 +19,30 @@ class VideoItemScreen extends StatefulWidget {
 }
 
 class _VideoItemScreenState extends State<VideoItemScreen> {
+  List titleWordList = [];
+  List listUnans = [];
+  List listLearn = [];
+  List listMemed = [];
+  var unAnsweredChecked = true;
+  // var dontKnowChecked = true;
+  var learningChecked = true;
+  var memorizedChecked = false;
   var seasons = 1;
-  Map videoInfo = {"overview": "", "release_date": "", "first_air_date": ""};
+  String lang = "en";
+  int gameRule = 0;
+  Map videoInfo = {
+    "overview": "",
+    "release_date": "",
+    "first_air_date": "",
+    "name": ""
+  };
   Map<Object?, dynamic> episodes = {
     1: {"title": "part 1"}
   };
 
   @override
   void initState() {
+    getLanguage();
     sortEpisode();
     super.initState();
     if (widget.snap['tmdb'].length > 0) {
@@ -44,15 +62,25 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
   void getMovieInfo() async {
     var res = await ApiMethod()
         .getVideoInfo(widget.snap['tmdb'], widget.snap['type']);
+
     setState(() {
       videoInfo = res;
+    });
+  }
+
+  getLanguage() async {
+    String tmp = await HiveMethods().getLanguage();
+    print(tmp);
+    setState(() {
+      lang = tmp;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     // var imageUrl = 'assets/images/sample.jpg';
-    var _screenSize = MediaQuery.of(context).size;
+    var w = MediaQuery.of(context).size.width * 0.01;
+    var h = MediaQuery.of(context).size.height * 0.01;
 
     Locale locale = Localizations.localeOf(context);
     String languageCode = locale.languageCode;
@@ -68,14 +96,14 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: _screenSize.width * 0.40 * 1000 / 680,
+              height: w * 40 * 1000 / 680,
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8.0),
-                    width: _screenSize.width * 0.40,
+                    width: w * 40,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4.0),
                       child: AspectRatio(
@@ -90,7 +118,8 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        widget.snap['title'],
+                                        videoInfo['title'] ??
+                                            widget.snap['title'],
                                         style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
@@ -116,7 +145,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                   ),
                   Container(
                     padding: const EdgeInsets.all(8.0),
-                    width: _screenSize.width * 0.60,
+                    width: w * 60,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,35 +154,33 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                         //   widget.snap['type'],
                         //   style: const TextStyle(fontSize: 20),
                         // ),
-                        const SizedBox(
-                          height: 8,
+                        SizedBox(
+                          height: h * 1,
                         ),
                         widget.snap['type'] == "movie"
                             ? Text(videoInfo['release_date'])
                             : Text(videoInfo['first_air_date']),
                         Text(
-                          widget.snap['title'],
+                          videoInfo['title'] ??
+                              (videoInfo['name'] ?? widget.snap['title']),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: const TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w600),
+                              fontSize: 18, fontWeight: FontWeight.w600),
                         ),
-                        languageCode == "ja"
-                            ? Text(
-                                widget.snap['jpn'],
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              )
-                            : Container(),
-                        const SizedBox(
-                          height: 8,
+
+                        SizedBox(
+                          height: h * 1,
                         ),
-                        Text(
-                          videoInfo['overview'],
-                          style: const TextStyle(fontSize: 16),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: (_screenSize.width * 0.40 * 1000 / 680 / 30)
-                              .floor(),
+                        Flexible(
+                          child: SingleChildScrollView(
+                            child: Text(
+                              videoInfo['overview'],
+                              style: const TextStyle(fontSize: 16),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: (w * 340 * 1000 / 680 / 30).floor(),
+                            ),
+                          ),
                         )
                       ],
                     ),
@@ -191,15 +218,16 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
             //     ],
             //   ),
             // ),
-            const SizedBox(
-              height: 12,
+            SizedBox(
+              height: h * 8,
             ),
             // ignore: prefer_const_constructors
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: const Text(
-                "Lesson",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              child: Text(
+                lang == "ja" ? "単語リスト" : "Vocaburary List",
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
             Flexible(
@@ -209,7 +237,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                 itemCount: widget.snap['seasons'][seasons.toString()].length,
                 itemBuilder: (context, index) {
                   return _listTile(episodes.values.elementAt(index), index,
-                      _screenSize, widget.snap);
+                      widget.snap, gameRule);
                 },
               ),
             ),
@@ -219,7 +247,9 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
     );
   }
 
-  Widget _listTile(item, index, size, snap) {
+  Widget _listTile(item, index, snap, gameRule) {
+    var w = MediaQuery.of(context).size.width * 0.01;
+    var h = MediaQuery.of(context).size.height * 0.01;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Container(
@@ -236,8 +266,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                   "episode": item["id"],
                   "content_type": snap['type']
                 });
-                await FirestoreMethods()
-                    .getWords(id: item['id'], version: item['version']);
+                await FirestoreMethods().getWords(id: item['id']);
                 // await HiveMethods().setAnswers(words: item["words"]);
                 item['video_id'] = snap['id'];
                 item['video_title'] = snap['title'];
@@ -247,12 +276,24 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                 item['videoInfo'] = videoInfo;
                 item['type'] = widget.snap['type'];
 
-                Navigator.pushNamed(
-                  context,
-                  // '/start',
-                  '/memorize',
-                  arguments: ItemScreenArguments(snap: item),
+                showDialog(
+                  context: context,
+                  builder: (_) {
+                    final _player = AudioPlayer();
+                    gameRule == 0;
+                    return StartDialog(
+                      index: index,
+                      item: item,
+                    );
+                  },
                 );
+
+                // Navigator.pushNamed(
+                //   context,
+                //   // '/start',
+                //   '/memorize',
+                //   arguments: ItemScreenArguments(snap: item),
+                // );
               },
               visualDensity: const VisualDensity(vertical: -1),
               title: Row(
@@ -263,7 +304,7 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                       "${index + 1}.",
                     ),
                     Container(
-                      width: size.width * 0.50,
+                      width: w * 50,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         "${item["title"]}",

@@ -43,7 +43,7 @@ class _WordTileState extends State<WordTile> {
                         children: [
                           Text(
                             "${widget.word}",
-                            style: const TextStyle(fontSize: 24),
+                            style: const TextStyle(fontSize: 20),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -56,58 +56,19 @@ class _WordTileState extends State<WordTile> {
                           ),
                         ],
                       ),
-                      // Text(
-                      //   "${widget.items["ja"]}",
-                      // ),
-                      // Text("aaa aaa aaa aaa"),
                       const SizedBox(
                         height: 4,
                       ),
-                      // Row(
-                      //   children: [
-                      //     Container(
-                      //       color: Color.fromARGB(255, 204, 204, 204),
-                      //       padding: EdgeInsets.symmetric(
-                      //           horizontal: 8, vertical: 1),
-                      //       child: Text(
-                      //         "類語",
-                      //         style: TextStyle(
-                      //           fontSize: 12,
-                      //           fontWeight: FontWeight.w500,
-                      //         ),
-                      //       ),
-                      //     ),
-                      //     SizedBox(
-                      //       width: 8,
-                      //     ),
-                      //     Text(
-                      //       'dissemble,act',
-                      //       style: TextStyle(fontSize: 14),
-                      //     )
-                      //   ],
-                      // ),
                       const SizedBox(
                         height: 4,
                       ),
                     ],
                   ),
                   const Spacer(),
-                  // Icon(
-                  //   Icons.search,
-                  //   color: Colors.grey,
-                  //   size: 32,
-                  // ),
                   GestureDetector(
                     onTap: () async {
                       final arguments = {'name': widget.word};
                       iosChannel.invokeMethod('modalDictionary', arguments);
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) =>
-                      //         MeaningScreen(word: widget.word),
-                      //     fullscreenDialog: true,
-                      //   ),
-                      // );
                     },
                     child: const Icon(
                       Icons.search,
@@ -128,7 +89,7 @@ class _WordTileState extends State<WordTile> {
                           child: const Icon(
                             Icons.check_box,
                             color: primaryColor,
-                            size: 32,
+                            size: 28,
                           ),
                         )
                       : GestureDetector(
@@ -140,7 +101,7 @@ class _WordTileState extends State<WordTile> {
                           child: const Icon(
                             Icons.check_box_outline_blank,
                             color: primaryColor,
-                            size: 32,
+                            size: 28,
                           ),
                         ),
                 ])));

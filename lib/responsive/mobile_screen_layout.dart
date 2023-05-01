@@ -1,5 +1,5 @@
 import 'package:englishapp/screens/my_page_screen.dart';
-import 'package:englishapp/screens/review_screen.dart';
+import 'package:englishapp/screens/my_study_screen.dart';
 import 'package:englishapp/screens/video_list_sceen.dart';
 import 'package:englishapp/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -75,8 +75,9 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
 
     List<Widget> homeScreenItems = [
       // FeedScreen(method: navigationTapped, user: user),
-      const VideoListScreen(),
-      const ReviewScreen(),
+      VideoListScreen(),
+      MyStudyScreen(),
+      // const ReviewScreen(),
       const MyPageScreen(),
       // FeedHomeScreen(method: navigationTapped, user: user),
       // SearchScreen(user: user),
@@ -110,10 +111,10 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.my_library_books_outlined,
+              Icons.star,
               color: secondaryColor,
             ),
-            label: 'review',
+            label: 'my item',
             // backgroundColor: primaryColor,
           ),
           BottomNavigationBarItem(

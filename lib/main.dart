@@ -2,6 +2,7 @@ import 'package:englishapp/responsive/mobile_screen_layout.dart';
 import 'package:englishapp/responsive/responsive_layout_screen.dart';
 import 'package:englishapp/responsive/web_screen_layout.dart';
 import 'package:englishapp/routes/ItemScreenArg.dart';
+import 'package:englishapp/screens/initial_screen.dart';
 import 'package:englishapp/screens/memorize_screen.dart';
 import 'package:englishapp/screens/review_screen.dart';
 import 'package:englishapp/screens/start_screen.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,15 +50,32 @@ class MyApp extends StatelessWidget {
       navigatorObservers: <NavigatorObserver>[routeObserver],
       debugShowCheckedModeBanner: false,
       title: 'Muzu',
-      theme: ThemeData.light().copyWith(),
+      theme: ThemeData(
+        fontFamily: 'SawarabiGothic',
+        // fontFamily: 'ZenMaruGothic',
+      ),
+
       // home: const ResponsiveLayout(
       //   webSreenLayout: WebScreenLayout(),
       //   mobileSreenLayout: MobileScreenLayout(),
       // ),
+      localizationsDelegates: const [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('ja', ''),
+        Locale('es', ''),
+        Locale('fr', ''),
+        Locale('ar', ''),
+      ],
       routes: {
         '/': (context) => const ResponsiveLayout(
               webSreenLayout: WebScreenLayout(),
-              mobileSreenLayout: MobileScreenLayout(),
+              mobileSreenLayout: InitialScreen(),
             ),
         // '/item': (context) => VideoItemScreen(),
         // '/start': (context) => StartScreen(),

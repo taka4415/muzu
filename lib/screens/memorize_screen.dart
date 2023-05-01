@@ -173,11 +173,13 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                                     widget.snap['videoInfo']['first_air_date'])
                             : Container(),
                         Text(
-                          widget.snap['video_title'],
+                          widget.snap['videoInfo']['title'] ??
+                              widget.snap['videoInfo']['name'] ??
+                              widget.snap['video_title'],
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: const TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w600),
+                              fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(
                           height: 8,
@@ -385,6 +387,7 @@ class _MemorizeScreenState extends State<MemorizeScreen> with RouteAware {
                                     widget.snap['id'], titleWordList);
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => LearningScreen(
+                                      gameRule: 0,
                                       snap: widget.snap,
                                       wordlist: snapwordlist,
                                       isQuizMode: isQuizMode),

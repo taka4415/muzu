@@ -1,6 +1,6 @@
 import 'package:englishapp/utils/colors.dart';
 import 'package:englishapp/utils/hive_method.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -14,11 +14,20 @@ class MyPageScreen extends StatefulWidget {
 class _MyPageScreenState extends State<MyPageScreen> {
   var learned = 0;
   var isLoading = true;
+  String lang = "en";
 
   @override
   initState() {
     super.initState();
+    getLanguage();
     getNum();
+  }
+
+  getLanguage() async {
+    String tmp = await HiveMethods().getLanguage();
+    setState(() {
+      lang = tmp;
+    });
   }
 
   getNum() async {
@@ -33,8 +42,77 @@ class _MyPageScreenState extends State<MyPageScreen> {
     });
   }
 
+  void _showModalPicker(BuildContext context) {
+    var w = MediaQuery.of(context).size.width * 0.01;
+    var h = MediaQuery.of(context).size.height * 0.01;
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: h * 36,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  "Language",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Container(
+                height: h * 30,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: CupertinoPicker(
+                    itemExtent: 40,
+                    children: _items.map(_pickerItem).toList(),
+                    onSelectedItemChanged: _onSelectedItemChanged,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  final List<String> _items = [
+    'Japanese',
+    'Spanish',
+    'French',
+    'Arabic',
+    'English',
+  ];
+
+  final List langList = [
+    "ja",
+    "es",
+    "fr",
+    "ar",
+    "en",
+  ];
+
+  Widget _pickerItem(String str) {
+    return Text(
+      str,
+      style: const TextStyle(fontSize: 32),
+    );
+  }
+
+  void _onSelectedItemChanged(int index) async {
+    await HiveMethods().setLocale(langList[index]);
+    setState(() {
+      lang = langList[index];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var w = MediaQuery.of(context).size.width * 0.01;
+    var h = MediaQuery.of(context).size.height * 0.01;
     var nickname = "Taka";
     var language = "Japanese";
     var pronunciation = "en-US";
@@ -56,16 +134,19 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   const SizedBox(
                     height: 120,
                   ),
-                  const Text("You have learned : ",
-                      style: TextStyle(fontSize: 18, color: Colors.black)),
+                  Text(lang == "ja" ? "学んだ単語 :" : "You have learned : ",
+                      style: TextStyle(fontSize: 20, color: Colors.black)),
+                  SizedBox(
+                    height: h * 1,
+                  ),
                   Text("$learned words",
                       style:
-                          const TextStyle(fontSize: 28, color: Colors.black)),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  const Text("Great!!!",
-                      style: TextStyle(fontSize: 32, color: primaryColor)),
+                          const TextStyle(fontSize: 40, color: Colors.black)),
+                  // SizedBox(
+                  //   height: h * 2,
+                  // ),
+                  // Text(lang == "ja" ? "すごい!!" : "Great!!!",
+                  //     style: TextStyle(fontSize: 32, color: primaryColor)),
                   // const SizedBox(
                   //   height: 40,
                   // ),
@@ -142,35 +223,26 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   //     )
                   //   ],
                   // ),
-                  const SizedBox(
-                    height: 60,
+                  SizedBox(
+                    height: h * 10,
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
-                      "No TV show or movie that you want to learn? Feel free to request! We will prepare it soon!",
+                      lang == "ja"
+                          ? "勉強したいタイトル/エピソードがない場合は、ここからリクエストしてね"
+                          : "If you don't see the title/episode you want to learn, please request here!",
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                     ),
                   ),
 
-                  // const Padding(
-                  //   padding: EdgeInsets.symmetric(horizontal: 24),
-                  //   child: Text(
-                  //     "Feel free to request! We will prepare it soon!",
-                  //     style: TextStyle(fontSize: 20),
-                  //   ),
-                  // ),
-
-                  // const SizedBox(
-                  //   height: 20,
-                  // ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 12),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 46,
+                      height: h * 6,
                       child: TextButton(
                           onPressed: () {
                             _urlLaunchWithStringButton.launchUriWithString(
@@ -178,8 +250,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                               "https://docs.google.com/forms/d/e/1FAIpQLSdlG3BcsTmvMm_9b3dGQnnJ07kD3ANbJ6iktbB1BK3UHMtsgQ/viewform",
                             );
                           },
-                          child: const Text(
-                            'Request Form',
+                          child: Text(
+                            lang == "ja" ? "リクエストフォーム" : 'Request Form',
                             style: TextStyle(fontSize: 18),
                           ),
                           style: TextButton.styleFrom(
@@ -187,8 +259,24 @@ class _MyPageScreenState extends State<MyPageScreen> {
                               backgroundColor: primaryColor)),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
+                  SizedBox(
+                    height: h * 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      _showModalPicker(context);
+                    },
+                    child: ListTile(
+                      title: Row(
+                        children: [
+                          Icon(Icons.language_outlined),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          Text('Language Setting(${lang})'),
+                        ],
+                      ),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -199,13 +287,13 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     },
                     child: ListTile(
                       title: Row(
-                        children: const [
+                        children: [
                           Icon(Icons.mail_outline),
                           SizedBox(
                             width: 12,
                           ),
                           Text(
-                            'Inquiry',
+                            lang == "ja" ? "お問い合わせ" : 'Inquiry',
                             style: TextStyle(fontSize: 16),
                           ),
                         ],
@@ -219,8 +307,16 @@ class _MyPageScreenState extends State<MyPageScreen> {
                         "https://taka4415.github.io/muzu_info/terms.html",
                       );
                     },
-                    child: const ListTile(
-                      title: Text('Terms'),
+                    child: ListTile(
+                      title: Row(
+                        children: [
+                          Icon(Icons.notes_outlined),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          Text(lang == "ja" ? "利用規約" : 'Terms'),
+                        ],
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -230,8 +326,16 @@ class _MyPageScreenState extends State<MyPageScreen> {
                         "https://taka4415.github.io/muzu_info/privacy_policy.html",
                       );
                     },
-                    child: const ListTile(
-                      title: Text('Privacy policy'),
+                    child: ListTile(
+                      title: Row(
+                        children: [
+                          Icon(Icons.notes_outlined),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          Text(lang == "ja" ? "プライバシーポリシー" : 'Privacy policy'),
+                        ],
+                      ),
                     ),
                   ),
                   // Padding(

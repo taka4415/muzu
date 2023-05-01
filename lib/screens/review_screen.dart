@@ -1,6 +1,5 @@
 import 'package:englishapp/screens/learning_screen.dart';
 import 'package:englishapp/utils/hive_method.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:englishapp/utils/colors.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -102,6 +101,7 @@ class _ReviewScreenState extends State<ReviewScreen> with RouteAware {
                     }
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => LearningScreen(
+                        gameRule: 0,
                         snap: item,
                         wordlist: reviewList,
                         isQuizMode: false,

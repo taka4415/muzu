@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:englishapp/utils/colors.dart';
 import 'package:englishapp/utils/hive_method.dart';
 import 'package:englishapp/widgets/word_tile.dart';
@@ -9,8 +10,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 class ResultScreen extends StatefulWidget {
   final snap;
   final wordlist;
+  final rightAnswer;
 
-  const ResultScreen({Key? key, required this.snap, required this.wordlist})
+  const ResultScreen(
+      {Key? key,
+      required this.snap,
+      required this.wordlist,
+      required this.rightAnswer})
       : super(key: key);
 
   @override
@@ -18,9 +24,10 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  final _player = AudioPlayer();
   String language = "en-US";
   FlutterTts tts = FlutterTts();
-
+  String lang = "en";
   int totalWords = 300;
   double done = 0;
   List listUnans = ["apple"];
@@ -67,11 +74,20 @@ class _ResultScreenState extends State<ResultScreen> {
     });
   }
 
+  getLanguage() async {
+    String tmp = await HiveMethods().getLanguage();
+    setState(() {
+      lang = tmp;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     calAnswerState();
+    getLanguage();
     sendPageView();
+    _player.play(AssetSource("sounds/result.mp3"));
   }
 
   void sendPageView() {
@@ -87,7 +103,8 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
     var _barWidth = MediaQuery.of(context).size.width - 48;
-
+    var w = MediaQuery.of(context).size.width * 0.01;
+    var h = MediaQuery.of(context).size.height * 0.01;
     return Scaffold(
       body: SingleChildScrollView(
         // color: Colors.white,
@@ -95,8 +112,8 @@ class _ResultScreenState extends State<ResultScreen> {
           color: Colors.white,
           child: Column(
             children: [
-              const SizedBox(
-                height: 40,
+              SizedBox(
+                height: h * 2,
               ),
 
               Container(
@@ -104,25 +121,54 @@ class _ResultScreenState extends State<ResultScreen> {
                 child: Column(
                   children: [
                     Text(
-                      widget.snap['video_title'],
+                      widget.snap['videoInfo']['title'] ??
+                          widget.snap['videoInfo']['name'] ??
+                          widget.snap['video_title'],
                       style: const TextStyle(fontSize: 16, color: Colors.black),
                     ),
                     Text(
                       "${widget.snap['index']}. ${widget.snap['title']}",
                       style: const TextStyle(fontSize: 20, color: Colors.black),
                     ),
-                    const SizedBox(height: 40),
+                    SizedBox(height: h * 6),
 
                     // Text("Today's learning",
                     //     style: TextStyle(fontSize: 22, color: Colors.black)),
                     // Text("10 words",
                     //     style: TextStyle(fontSize: 40, color: Colors.black)),
-                    const Text("Great!!!",
-                        style: TextStyle(fontSize: 40, color: primaryColor)),
+                    // const Text("Great!!!",
+                    //     style: TextStyle(fontSize: 40, color: primaryColor)),
+                    Text(
+                      lang == "ja" ? "正解数" : "Score",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    Row(
+                      textBaseline: TextBaseline.alphabetic,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      children: [
+                        Text(
+                          widget.rightAnswer.toString(),
+                          style: TextStyle(fontSize: 60),
+                        ),
+                        Text(
+                          "/${widget.wordlist.length.toString()}",
+                          style: TextStyle(fontSize: 24),
+                        )
+                      ],
+                    ),
+                    Text(
+                      widget.rightAnswer == widget.wordlist.length
+                          ? "Perfect!!!"
+                          : widget.rightAnswer / widget.wordlist.length > 0.8
+                              ? "Great!!!"
+                              : "Nice!!!",
+                      style: TextStyle(fontSize: 28, color: primaryColor),
+                    ),
                     widget.snap['review']
                         ? Container()
-                        : const SizedBox(
-                            height: 24,
+                        : SizedBox(
+                            height: h * 2,
                           ),
 
                     widget.snap['review']
@@ -131,11 +177,15 @@ class _ResultScreenState extends State<ResultScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '${done.toStringAsFixed(1)}% done',
+                                lang == "ja"
+                                    ? '${done.toStringAsFixed(1)}% 完了'
+                                    : '${done.toStringAsFixed(1)}% done',
                                 style: const TextStyle(fontSize: 16),
                               ),
                               Text(
-                                'total:$totalWords words',
+                                lang == "ja"
+                                    ? "合計:$totalWords words"
+                                    : 'total:$totalWords words',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ],
@@ -175,8 +225,8 @@ class _ResultScreenState extends State<ResultScreen> {
                           ),
                     widget.snap['review']
                         ? Container()
-                        : const SizedBox(
-                            height: 24,
+                        : SizedBox(
+                            height: h * 2,
                           ),
                     widget.snap['review']
                         ? Container()
@@ -190,9 +240,9 @@ class _ResultScreenState extends State<ResultScreen> {
                               const SizedBox(
                                 width: 12,
                               ),
-                              const Text(
-                                'memorized',
-                                style: TextStyle(fontSize: 20),
+                              Text(
+                                lang == "ja" ? "学習済み" : 'memorized',
+                                style: const TextStyle(fontSize: 20),
                               ),
                               const Spacer(),
                               Text("${listMemed.length} words",
@@ -201,30 +251,10 @@ class _ResultScreenState extends State<ResultScreen> {
                           ),
                     widget.snap['review']
                         ? Container()
-                        : const SizedBox(
-                            height: 18,
+                        : SizedBox(
+                            height: h * 2,
                           ),
-                    // Row(
-                    //   children: [
-                    //     Container(
-                    //       color: Colors.grey,
-                    //       height: 28,
-                    //       width: 28,
-                    //     ),
-                    //     SizedBox(
-                    //       width: 12,
-                    //     ),
-                    //     Text(
-                    //       'not sure',
-                    //       style: TextStyle(fontSize: 22),
-                    //     ),
-                    //     Spacer(),
-                    //     Text("70 words", style: TextStyle(fontSize: 22))
-                    //   ],
-                    // ),
-                    // SizedBox(
-                    //   height: 18,
-                    // ),
+
                     widget.snap['review']
                         ? Container()
                         : Row(
@@ -237,9 +267,9 @@ class _ResultScreenState extends State<ResultScreen> {
                               const SizedBox(
                                 width: 12,
                               ),
-                              const Text(
-                                "learning",
-                                style: TextStyle(fontSize: 20),
+                              Text(
+                                lang == "ja" ? "学習中" : "learning",
+                                style: const TextStyle(fontSize: 20),
                               ),
                               const Spacer(),
                               Text("${listLearn.length} words",
@@ -248,8 +278,8 @@ class _ResultScreenState extends State<ResultScreen> {
                           ),
                     widget.snap['review']
                         ? Container()
-                        : const SizedBox(
-                            height: 18,
+                        : SizedBox(
+                            height: h * 2,
                           ),
                     widget.snap['review']
                         ? Container()
@@ -264,9 +294,9 @@ class _ResultScreenState extends State<ResultScreen> {
                               const SizedBox(
                                 width: 12,
                               ),
-                              const Text(
-                                "unanswered",
-                                style: TextStyle(fontSize: 20),
+                              Text(
+                                lang == "ja" ? "未学習" : "unanswered",
+                                style: const TextStyle(fontSize: 20),
                               ),
                               const Spacer(),
                               Text("${listUnans.length} words",
@@ -288,20 +318,22 @@ class _ResultScreenState extends State<ResultScreen> {
                       if (widget.snap['review']) {
                         Navigator.popUntil(context, (route) => route.isFirst);
                       } else {
-                        Navigator.popUntil(
-                            context, ModalRoute.withName("/memorize"));
+                        // Navigator.popUntil(
+                        //     context, ModalRoute.withName("/item"));
+                        int count = 0;
+                        Navigator.popUntil(context, (_) => count++ >= 3);
                       }
                     },
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(fontSize: 20),
+                    child: Text(
+                      lang == "ja" ? "続ける" : 'Continue',
+                      style: const TextStyle(fontSize: 20),
                     ),
                     style: TextButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: primaryColor)),
               ),
-              const SizedBox(
-                height: 24,
+              SizedBox(
+                height: h * 2,
               ),
               Container(
                 width: double.infinity,
@@ -309,11 +341,13 @@ class _ResultScreenState extends State<ResultScreen> {
                 height: 50,
                 child: TextButton(
                     onPressed: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      // Navigator.popUntil(context, (route) => route.isFirst);
+                      int count = 0;
+                      Navigator.popUntil(context, (_) => count++ >= 4);
                     },
-                    child: const Text(
-                      "Quit",
-                      style: TextStyle(fontSize: 20),
+                    child: Text(
+                      lang == "ja" ? "やめる" : "Quit",
+                      style: const TextStyle(fontSize: 20),
                     ),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.black,
@@ -324,8 +358,8 @@ class _ResultScreenState extends State<ResultScreen> {
                       ),
                     )),
               ),
-              const SizedBox(
-                height: 16,
+              SizedBox(
+                height: h * 4,
               ),
               // Container(
               //   padding: EdgeInsets.all(8),
@@ -337,9 +371,10 @@ class _ResultScreenState extends State<ResultScreen> {
               Container(
                 padding: const EdgeInsets.only(right: 12),
                 width: double.infinity,
-                child: const Text(
-                  "memorized",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+                child: Text(
+                  lang == "ja" ? "学習済み" : 'memorized',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w400),
                 ),
                 alignment: Alignment.centerRight,
               ),
