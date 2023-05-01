@@ -140,7 +140,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     //     style: TextStyle(fontSize: 40, color: primaryColor)),
                     Text(
                       lang == "ja" ? "正解数" : "Score",
-                      style: TextStyle(fontSize: 24),
+                      style: const TextStyle(fontSize: 24),
                     ),
                     Row(
                       textBaseline: TextBaseline.alphabetic,
@@ -149,11 +149,11 @@ class _ResultScreenState extends State<ResultScreen> {
                       children: [
                         Text(
                           widget.rightAnswer.toString(),
-                          style: TextStyle(fontSize: 60),
+                          style: const TextStyle(fontSize: 60),
                         ),
                         Text(
                           "/${widget.wordlist.length.toString()}",
-                          style: TextStyle(fontSize: 24),
+                          style: const TextStyle(fontSize: 24),
                         )
                       ],
                     ),
@@ -163,7 +163,7 @@ class _ResultScreenState extends State<ResultScreen> {
                           : widget.rightAnswer / widget.wordlist.length > 0.8
                               ? "Great!!!"
                               : "Nice!!!",
-                      style: TextStyle(fontSize: 28, color: primaryColor),
+                      style: const TextStyle(fontSize: 28, color: primaryColor),
                     ),
                     widget.snap['review']
                         ? Container()

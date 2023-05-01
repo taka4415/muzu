@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishapp/routes/ItemScreenArg.dart';
 import 'package:englishapp/utils/colors.dart';
 import 'package:englishapp/utils/hive_method.dart';
-import 'package:englishapp/widgets/primary_button.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
@@ -121,7 +120,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
         //     // toolbarHeight: 120,
         automaticallyImplyLeading: false,
         elevation: 1,
-        backgroundColor: Color.fromARGB(255, 250, 190, 0),
+        backgroundColor: const Color.fromARGB(255, 250, 190, 0),
         title: Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: TextFormField(
@@ -245,8 +244,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
   }
 
   Widget _videoItem({required snapshot}) {
-    Locale locale = Localizations.localeOf(context);
-    String languageCode = locale.languageCode;
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: GestureDetector(

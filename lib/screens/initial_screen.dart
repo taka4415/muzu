@@ -33,7 +33,7 @@ class _InitialScreenState extends State<InitialScreen> {
     var w = MediaQuery.of(context).size.width * 0.01;
     var h = MediaQuery.of(context).size.height * 0.01;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 250, 190, 0),
+      backgroundColor: const Color.fromARGB(255, 250, 190, 0),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: h * 10),
         child: Container(
@@ -42,7 +42,7 @@ class _InitialScreenState extends State<InitialScreen> {
             color: Colors.white,
             // border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.grey, //色
                 spreadRadius: 1,
@@ -65,7 +65,7 @@ class _InitialScreenState extends State<InitialScreen> {
                             : lang == "fr"
                                 ? "Livre de vocabulaire\n du film en anglais"
                                 : "English Movie\nVocabulary book",
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Color.fromARGB(255, 255, 87, 34),
                         fontSize: 36,
                         fontFamily: "ZenMaruGothic"
@@ -73,7 +73,7 @@ class _InitialScreenState extends State<InitialScreen> {
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  Text("-Muzu-",
+                  const Text("-Muzu-",
                       style: TextStyle(
                         color: Color.fromARGB(255, 68, 68, 68),
                         fontSize: 28,
@@ -92,8 +92,8 @@ class _InitialScreenState extends State<InitialScreen> {
                                   : lang == "ar"
                                       ? "تعرف على الكلمات التي تظهر بالفعل في العنوان / الحلقة المحددة"
                                       : "Learn the words that actually appear in the selected title/episode",
-                      style: TextStyle(color: blackColor, fontSize: 21)),
-                  Spacer(),
+                      style: const TextStyle(color: blackColor, fontSize: 21)),
+                  const Spacer(),
                   Text(
                       lang == "ja"
                           ? "まずは、好きなタイトルを選ぼう！"
@@ -104,7 +104,7 @@ class _InitialScreenState extends State<InitialScreen> {
                                   : lang == "ar"
                                       ? "أولاً ، اختر لقبك المفضل"
                                       : "First, choose your favorite title!",
-                      style: TextStyle(color: blackColor, fontSize: 20)),
+                      style: const TextStyle(color: blackColor, fontSize: 20)),
                   Text(
                     lang == "ja"
                         ? "※もし学びたいタイトルがなかったら、\nマイページからリクエストしてね!"
@@ -115,7 +115,7 @@ class _InitialScreenState extends State<InitialScreen> {
                                 : lang == "ar"
                                     ? "إذا كنت لا ترى العنوان الذي تريد معرفته ، فيرجى طلبه من صفحتي"
                                     : "※If you don't see the title you want to learn, please request it from my page.",
-                    style: TextStyle(color: blackColor, fontSize: 18),
+                    style: const TextStyle(color: blackColor, fontSize: 18),
                   ),
                   SizedBox(
                     height: h * 4,
@@ -146,7 +146,7 @@ class _InitialScreenState extends State<InitialScreen> {
                     onTap: () {
                       _showModalPicker(context);
                     },
-                    child: Text(
+                    child: const Text(
                       "Language Setting",
                       style: TextStyle(fontSize: 20, color: blackColor),
                     ),
@@ -167,18 +167,18 @@ class _InitialScreenState extends State<InitialScreen> {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
-        return Container(
+        return SizedBox(
           height: h * 36,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
                 child: Text(
                   "Language",
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              Container(
+              SizedBox(
                 height: h * 30,
                 child: GestureDetector(
                   onTap: () {

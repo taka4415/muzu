@@ -48,18 +48,18 @@ class _MyPageScreenState extends State<MyPageScreen> {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
-        return Container(
+        return SizedBox(
           height: h * 36,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
                 child: Text(
                   "Language",
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              Container(
+              SizedBox(
                 height: h * 30,
                 child: GestureDetector(
                   onTap: () {
@@ -113,9 +113,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width * 0.01;
     var h = MediaQuery.of(context).size.height * 0.01;
-    var nickname = "Taka";
-    var language = "Japanese";
-    var pronunciation = "en-US";
     final _urlLaunchWithStringButton = UrlLaunchWithStringButton();
 
     return Scaffold(
@@ -135,7 +132,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     height: 120,
                   ),
                   Text(lang == "ja" ? "学んだ単語 :" : "You have learned : ",
-                      style: TextStyle(fontSize: 20, color: Colors.black)),
+                      style:
+                          const TextStyle(fontSize: 20, color: Colors.black)),
                   SizedBox(
                     height: h * 1,
                   ),
@@ -227,13 +225,13 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     height: h * 10,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
                       lang == "ja"
                           ? "勉強したいタイトル/エピソードがない場合は、ここからリクエストしてね"
                           : "If you don't see the title/episode you want to learn, please request here!",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w400),
                     ),
                   ),
 
@@ -252,7 +250,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           },
                           child: Text(
                             lang == "ja" ? "リクエストフォーム" : 'Request Form',
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           ),
                           style: TextButton.styleFrom(
                               foregroundColor: Colors.white,
@@ -269,11 +267,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     child: ListTile(
                       title: Row(
                         children: [
-                          Icon(Icons.language_outlined),
-                          SizedBox(
+                          const Icon(Icons.language_outlined),
+                          const SizedBox(
                             width: 12,
                           ),
-                          Text('Language Setting(${lang})'),
+                          Text('Language Setting($lang)'),
                         ],
                       ),
                     ),
@@ -288,13 +286,13 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     child: ListTile(
                       title: Row(
                         children: [
-                          Icon(Icons.mail_outline),
-                          SizedBox(
+                          const Icon(Icons.mail_outline),
+                          const SizedBox(
                             width: 12,
                           ),
                           Text(
                             lang == "ja" ? "お問い合わせ" : 'Inquiry',
-                            style: TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ],
                       ),
@@ -310,8 +308,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     child: ListTile(
                       title: Row(
                         children: [
-                          Icon(Icons.notes_outlined),
-                          SizedBox(
+                          const Icon(Icons.notes_outlined),
+                          const SizedBox(
                             width: 12,
                           ),
                           Text(lang == "ja" ? "利用規約" : 'Terms'),
@@ -329,8 +327,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     child: ListTile(
                       title: Row(
                         children: [
-                          Icon(Icons.notes_outlined),
-                          SizedBox(
+                          const Icon(Icons.notes_outlined),
+                          const SizedBox(
                             width: 12,
                           ),
                           Text(lang == "ja" ? "プライバシーポリシー" : 'Privacy policy'),

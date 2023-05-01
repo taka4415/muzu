@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:englishapp/utils/api_method.dart';
 import 'package:englishapp/utils/firestore_method.dart';
@@ -279,7 +278,6 @@ class _VideoItemScreenState extends State<VideoItemScreen> {
                 showDialog(
                   context: context,
                   builder: (_) {
-                    final _player = AudioPlayer();
                     gameRule == 0;
                     return StartDialog(
                       index: index,

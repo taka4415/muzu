@@ -122,7 +122,6 @@ class _MyStudyScreenState extends State<MyStudyScreen> {
     var w = MediaQuery.of(context).size.width * 0.01;
     var h = MediaQuery.of(context).size.height * 0.01;
 
-    Locale locale = Localizations.localeOf(context);
     return Scaffold(
       backgroundColor: Colors.white,
       // appBar: AppBar(
@@ -275,7 +274,6 @@ class _MyStudyScreenState extends State<MyStudyScreen> {
   }
 
   Widget _videoItem({required snapshot}) {
-    Locale locale = Localizations.localeOf(context);
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: GestureDetector(

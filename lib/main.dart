@@ -1,4 +1,3 @@
-import 'package:englishapp/responsive/mobile_screen_layout.dart';
 import 'package:englishapp/responsive/responsive_layout_screen.dart';
 import 'package:englishapp/responsive/web_screen_layout.dart';
 import 'package:englishapp/routes/ItemScreenArg.dart';

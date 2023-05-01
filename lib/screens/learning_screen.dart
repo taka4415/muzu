@@ -58,7 +58,7 @@ class _LearningScreenState extends State<LearningScreen> {
     {"meaning": "", "ja": "", "word": "", "fr": "", "es": "", "ar": ""},
     {"meaning": "", "ja": "", "word": "", "fr": "", "es": "", "ar": ""},
   ];
-  String answer_meaning = "";
+  String answerMeaning = "";
   int rightAnswer = 0;
 
   // void sendPageView() {
@@ -101,7 +101,7 @@ class _LearningScreenState extends State<LearningScreen> {
       for (var i in _tmp) {
         if (i['word'] == word) {
           setState(() {
-            answer_meaning = i['meaning'];
+            answerMeaning = i['meaning'];
             if (lang == "en") {
               nativeWord = i['word'];
             } else {
@@ -131,7 +131,7 @@ class _LearningScreenState extends State<LearningScreen> {
             .then((_) => _speak(word));
       } else if (widget.gameRule == 2) {
         Future.delayed(const Duration(milliseconds: 450))
-            .then((_) => _speak(answer_meaning));
+            .then((_) => _speak(answerMeaning));
       }
       if (widget.isQuizMode) {
         getQuiz(word);
@@ -221,7 +221,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                 : Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0),
-                                    child: Text(answer_meaning,
+                                    child: Text(answerMeaning,
                                         style: const TextStyle(fontSize: 24)),
                                   ),
                         widget.gameRule == 0
@@ -553,7 +553,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                           ? nativeWord
                                           : widget.gameRule == 1
                                               ? word
-                                              : answer_meaning,
+                                              : answerMeaning,
                                       style: const TextStyle(fontSize: 16),
                                     ),
                                   ),
@@ -578,7 +578,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                                       : "Do you report bug of this word?"),
                                                   actions: <Widget>[
                                                     GestureDetector(
-                                                      child: Padding(
+                                                      child: const Padding(
                                                         padding: EdgeInsets
                                                             .symmetric(
                                                                 vertical: 4.0,
@@ -626,7 +626,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                                                           Widget>[
                                                                         GestureDetector(
                                                                           child:
-                                                                              Padding(
+                                                                              const Padding(
                                                                             padding:
                                                                                 EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
                                                                             child:
@@ -647,10 +647,9 @@ class _LearningScreenState extends State<LearningScreen> {
                                                 ),
                                               ],
                                             );
-                                            ;
                                           });
                                     },
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.report_gmailerrorred_outlined,
                                       color: Colors.grey,
                                     ),
