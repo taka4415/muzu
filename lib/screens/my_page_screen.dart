@@ -80,6 +80,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
   }
 
   final List<String> _items = [
+    "-",
     'Japanese',
     'Spanish',
     'French',
@@ -88,6 +89,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
   ];
 
   final List langList = [
+    "en",
     "ja",
     "es",
     "fr",

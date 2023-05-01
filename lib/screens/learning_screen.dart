@@ -328,7 +328,9 @@ class _LearningScreenState extends State<LearningScreen> {
                                                                     [optionText]
                                                                 : meanings[i]
                                                                     ['word']
-                                                            : "Not Above",
+                                                            : lang == "ja"
+                                                                ? "正解はない"
+                                                                : "Not Above",
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             color: (meanings[i][
@@ -387,7 +389,9 @@ class _LearningScreenState extends State<LearningScreen> {
                                                             hightAnswer &&
                                                             selected[i]
                                                         ? Colors.red
-                                                        : Colors.orange, //色
+                                                        : i != 4
+                                                            ? Colors.orange
+                                                            : Colors.grey, //色
                                                 width: 1, //太さ
                                               ),
                                             )),
@@ -437,9 +441,11 @@ class _LearningScreenState extends State<LearningScreen> {
                                 });
                               },
                               child: widget.isQuizMode
-                                  ? const Text(
-                                      "not sure... skip",
-                                      style: TextStyle(fontSize: 20),
+                                  ? Text(
+                                      lang == "ja"
+                                          ? "分からないので、スキップする"
+                                          : "not sure... skip",
+                                      style: TextStyle(fontSize: 18),
                                     )
                                   : const Text(
                                       "not sure",

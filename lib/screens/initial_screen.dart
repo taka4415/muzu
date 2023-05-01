@@ -67,7 +67,7 @@ class _InitialScreenState extends State<InitialScreen> {
                                 : "English Movie\nVocabulary book",
                     style: const TextStyle(
                         color: Color.fromARGB(255, 255, 87, 34),
-                        fontSize: 36,
+                        fontSize: 28,
                         fontFamily: "ZenMaruGothic"
                         // fontWeight: FontWeight.w700,
                         ),
@@ -76,7 +76,7 @@ class _InitialScreenState extends State<InitialScreen> {
                   const Text("-Muzu-",
                       style: TextStyle(
                         color: Color.fromARGB(255, 68, 68, 68),
-                        fontSize: 28,
+                        fontSize: 26,
                         // fontWeight: FontWeight.w700,
                       )),
                   SizedBox(
@@ -92,7 +92,7 @@ class _InitialScreenState extends State<InitialScreen> {
                                   : lang == "ar"
                                       ? "تعرف على الكلمات التي تظهر بالفعل في العنوان / الحلقة المحددة"
                                       : "Learn the words that actually appear in the selected title/episode",
-                      style: const TextStyle(color: blackColor, fontSize: 21)),
+                      style: const TextStyle(color: blackColor, fontSize: 18)),
                   const Spacer(),
                   Text(
                       lang == "ja"
@@ -104,7 +104,7 @@ class _InitialScreenState extends State<InitialScreen> {
                                   : lang == "ar"
                                       ? "أولاً ، اختر لقبك المفضل"
                                       : "First, choose your favorite title!",
-                      style: const TextStyle(color: blackColor, fontSize: 20)),
+                      style: const TextStyle(color: blackColor, fontSize: 18)),
                   Text(
                     lang == "ja"
                         ? "※もし学びたいタイトルがなかったら、\nマイページからリクエストしてね!"
@@ -115,7 +115,7 @@ class _InitialScreenState extends State<InitialScreen> {
                                 : lang == "ar"
                                     ? "إذا كنت لا ترى العنوان الذي تريد معرفته ، فيرجى طلبه من صفحتي"
                                     : "※If you don't see the title you want to learn, please request it from my page.",
-                    style: const TextStyle(color: blackColor, fontSize: 18),
+                    style: const TextStyle(color: blackColor, fontSize: 16),
                   ),
                   SizedBox(
                     height: h * 4,
@@ -148,7 +148,7 @@ class _InitialScreenState extends State<InitialScreen> {
                     },
                     child: const Text(
                       "Language Setting",
-                      style: TextStyle(fontSize: 20, color: blackColor),
+                      style: TextStyle(fontSize: 18, color: blackColor),
                     ),
                   ),
                   SizedBox(
@@ -199,6 +199,7 @@ class _InitialScreenState extends State<InitialScreen> {
   }
 
   final List<String> _items = [
+    "-",
     'Japanese',
     'Spanish',
     'French',
@@ -207,6 +208,7 @@ class _InitialScreenState extends State<InitialScreen> {
   ];
 
   final List langList = [
+    "en",
     "ja",
     "es",
     "fr",
