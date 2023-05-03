@@ -1,3 +1,4 @@
+import 'package:englishapp/utils/hive_method.dart';
 import 'package:flutter/material.dart';
 
 class ResponsiveLayout extends StatefulWidget {
@@ -28,6 +29,9 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
+    String languageCode = locale.languageCode;
+    HiveMethods().setDeviceLocale(languageCode);
     return LayoutBuilder(
       builder: (context, constraints) {
         // if (constraints.minWidth > webScreenSize) {

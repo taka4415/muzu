@@ -157,6 +157,13 @@ class HiveMethods {
     await boxSetting.put("language", language);
   }
 
+  setDeviceLocale(String language) async {
+    var lang = await boxSetting.get('language');
+    if (lang == null) {
+      await boxSetting.put("language", language);
+    }
+  }
+
   getLanguage() async {
     String language = await boxSetting.get('language', defaultValue: "en");
     if (["ja", "ar", "es", "fr", "en"].contains(language)) {

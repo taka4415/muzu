@@ -265,7 +265,7 @@ class _LearningScreenState extends State<LearningScreen> {
                               )
                             : Container(),
                         SizedBox(
-                          height: h * 4,
+                          height: h * 3,
                         ),
                         widget.isQuizMode
                             ? Column(
@@ -426,8 +426,8 @@ class _LearningScreenState extends State<LearningScreen> {
                                   ),
                                 ],
                               ),
-                        const SizedBox(
-                          height: 40,
+                        SizedBox(
+                          height: h * 3,
                         ),
                         SizedBox(
                           width: double.infinity,
